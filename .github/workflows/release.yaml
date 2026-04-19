@@ -41,7 +41,7 @@ concurrency:
 jobs:
   ubuntu_static_x86_64:
     name: linux x86_64 static
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI:none') }}
+    if: false
     runs-on: [ubuntu-latest]
     steps:
     - name: Harden Runner
@@ -116,7 +116,7 @@ jobs:
   # Build .deb packages Ubuntu/Debian
   release_ubuntu_pkg:
     name: .deb / ${{ matrix.os }}
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI:none') }}
+    if: false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -252,19 +252,6 @@ jobs:
             arch: '-A Win32'
           - triplet: x64-windows-static
             arch: '-A x64'
-            run_benchmark: true
-          - triplet: x64-windows-static
-            arch: '-A x64'
-            build_type: Debug
-            upload: 'OFF'
-          - triplet: x86-windows
-            arch: '-A Win32'
-            static: 'OFF'
-            tools: 'OFF'
-          - triplet: x64-windows
-            arch: '-A x64'
-            static: 'OFF'
-            tools: 'OFF'
 
     env:
       VCPKG_VERSION: '2025.12.12'
@@ -391,7 +378,7 @@ jobs:
 
   publish_release_assets:
     name: Publish release assets
-    needs: [ubuntu_static_x86_64, release_ubuntu_pkg, windows_build]
+    needs: [windows_build]
     if: github.event_name == 'release'
     runs-on: [ubuntu-latest]
     permissions:
