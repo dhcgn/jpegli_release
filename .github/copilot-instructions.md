@@ -82,6 +82,28 @@ release_ubuntu_pkg:
 
 ---
 
+## Generating a Changelog
+
+Generate a changelog between the previous and new tag, then update the release notes on GitHub.
+
+1. Get all commits between the two tags, excluding dependency bumps:
+   ```bash
+   git --no-pager log v0.0.PREV..v0.0.NEW --pretty=format:"%h %s" | grep -v "^.*Bump "
+   ```
+
+2. Organize the output into these categories and write to a markdown file (e.g. `notes.md`):
+   - **🪟 Fork changes (Windows CI)** — any commits touching `.github/workflows/`, `README`, or vcpkg version
+   - **🐛 Bug fixes (upstream)** — commits starting with `fix:` or `Fix`, mark Windows-relevant ones with ✅
+   - **✨ Improvements (upstream)** — feature additions and enhancements
+   - **🔧 Dependency & action bumps (upstream)** — version range for each bumped action/library
+
+3. Upload the notes to the GitHub release:
+   ```bash
+   gh release edit v0.0.NEW --repo dhcgn/jpegli_release --notes-file notes.md
+   ```
+
+---
+
 ## Creating a Release
 
 1. Create and push a tag:
