@@ -30,24 +30,26 @@ jobs:
           git fetch --no-tags --prune --prune-tags origin
           git fetch --no-tags --prune --prune-tags upstream
 
-      - name: Compare origin/main with upstream/main (excluding workflows and README)
+      - name: Compare origin/main with upstream/main (excluding workflows, README, copilot instructions, and third_party)
         run: |
-          # Compare the two branches while excluding .github/workflows and README.md
+          # Compare the two branches while excluding local-only paths.
           # If they are identical (except for those paths), exit successfully.
 
-          if git diff --quiet origin/main upstream/main -- . ':(exclude).github/workflows' ':(exclude)README.md'; then
-            echo "Repository is in sync with upstream google/jpegli (excluding .github/workflows and README.md)."
+          if git diff --quiet origin/main upstream/main -- . ':(exclude).github/workflows' ':(exclude)README.md' ':(exclude).github/copilot-instructions.md' ':(exclude)third_party'; then
+            echo "Repository is in sync with upstream google/jpegli (excluding .github/workflows, README.md, .github/copilot-instructions.md, and third_party)."
           else
-            echo "::error::Repository is OUT OF SYNC with upstream google/jpegli (excluding .github/workflows and README.md)." 
+            echo "::error::Repository is OUT OF SYNC with upstream google/jpegli (excluding .github/workflows, README.md, .github/copilot-instructions.md, and third_party)." 
             echo ""
-            echo "Summary of differences between origin/main and upstream/main (excluding .github/workflows and README.md):"
-            git diff --stat origin/main upstream/main -- . ':(exclude).github/workflows' ':(exclude)README.md' || true
+            echo "Summary of differences between origin/main and upstream/main (excluding .github/workflows, README.md, .github/copilot-instructions.md, and third_party):"
+            git diff --stat origin/main upstream/main -- . ':(exclude).github/workflows' ':(exclude)README.md' ':(exclude).github/copilot-instructions.md' ':(exclude)third_party' || true
             echo ""
             echo "To sync manually, run these commands locally (or in a one-off workflow):"
             echo "  git fetch origin upstream"
             echo "  git checkout -B sync-upstream upstream/main"
             echo "  git checkout origin/main -- .github/workflows || true"
             echo "  git checkout origin/main -- README.md || true"
+            echo "  git checkout origin/main -- .github/copilot-instructions.md || true"
+            echo "  git checkout origin/main -- third_party || true"
             echo "  git status"
             echo "  # If everything looks good:"
             echo "  git commit -am 'Sync with upstream google/jpegli'"
